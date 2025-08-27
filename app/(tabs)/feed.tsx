@@ -56,6 +56,7 @@ const initialPosts: Post[] = [
 export default function Feed() {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [fabOpen, setFabOpen] = useState(false);
+
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [newComment, setNewComment] = useState("");
@@ -63,6 +64,7 @@ export default function Feed() {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [newPostText, setNewPostText] = useState("");
 
+  // 👍 Dar like
   const handleLike = (postId: string) => {
     setPosts((prev) =>
       prev.map((p) =>
@@ -73,11 +75,13 @@ export default function Feed() {
     );
   };
 
+  // 💬 Abrir modal de comentarios
   const handleComment = (post: Post) => {
     setSelectedPost(post);
     setCommentModalVisible(true);
   };
 
+  // 💬 Enviar comentario
   const submitComment = () => {
     if (selectedPost && newComment.trim()) {
       setPosts((prev) =>
@@ -92,12 +96,13 @@ export default function Feed() {
     }
   };
 
+  // 📝 Crear nueva publicación
   const createPost = () => {
     if (newPostText.trim()) {
       const newPost: Post = {
         id: Date.now().toString(),
         user: "Tú",
-        avatar: "https://randomuser.me/api/portraits/men/32.jpg", // avatar fijo por ahora
+        avatar: "https://randomuser.me/api/portraits/men/32.jpg",
         date: "Ahora",
         text: newPostText,
         image: null,
@@ -106,13 +111,14 @@ export default function Feed() {
         shares: 0,
         liked: false,
       };
-      setPosts([newPost, ...posts]); // se agrega arriba
+      setPosts([newPost, ...posts]); // lo añade arriba
       setNewPostText("");
       setCreateModalVisible(false);
     }
   };
 
-  const renderPost = (item: Post) => (
+  // 🔹 Render de cada publicación
+  const renderPost = ({ item }: { item: Post }) => (
     <Card style={styles.card}>
       <Card.Title
         title={item.user}
@@ -149,9 +155,9 @@ export default function Feed() {
 
   return (
     <View style={styles.container}>
-      <FlatList<Post>
+      <FlatList
         data={posts}
-        renderItem={({ item }) => renderPost(item)}
+        renderItem={renderPost}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingBottom: 100 }}
       />
@@ -212,7 +218,6 @@ export default function Feed() {
 
       {/* 🔹 FAB con + */}
       <FAB.Group
-        visible={true}
         open={fabOpen}
         icon={fabOpen ? "close" : "plus"}
         actions={[
